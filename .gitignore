@@ -1,0 +1,6 @@
+# Ignore the data folder
+data/
+
+# Ignore .env files in the backend folder
+slate-backend/.env
+slate-backend/tmp/

@@ -1,35 +1,46 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/ishant/slate-backend/internal/handlers"
+	"github.com/ishant/slate-backend/internal/database"
 	"github.com/ishant/slate-backend/internal/utils"
 )
 
 func main() {
-    // Initialize database
-    utils.InitDB()
+    // Load environment and config
+    utils.LoadEnv()
+
+    // Initialize DB connection
+    if err := database.Connect(); err != nil {
+        log.Fatalf("Database connection failed: %v", err)
+    }
+    defer database.Close()
 
     // Create Fiber app
-    app := fiber.New()
+    app := NewServer()
 
-    // Root route
-    app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("Welcome to the Slate backend!")
-    })
+    // Start server in a goroutine so we can listen for shutdown signals
+    go func() {
+        if err := app.Listen(":" + utils.GetEnv("PORT", "8080")); err != nil {
+            log.Printf("Server error: %v", err)
+        }
+    }()
+    log.Println("🚀 Server started")
 
-    // Journal (Slate) routes
-    api := app.Group("/api")
-    journal := api.Group("/journals")
+    // Graceful shutdown on signal
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+    <-quit
 
-    journal.Get("/", handlers.GetJournals)
-    journal.Get("/:id", handlers.GetJournal)
-    journal.Post("/", handlers.CreateJournal)
-    journal.Put("/:id", handlers.UpdateJournal)
-    journal.Delete("/:id", handlers.DeleteJournal)
+    log.Println("⚠️ Shutdown signal received")
 
-    // Start server
-    port := ":8080"
-    app.Listen(port)
+    if err := app.Shutdown(); err != nil {
+        log.Fatalf("Error during shutdown: %v", err)
+    }
+
+    log.Println("👋 Server gracefully stopped")
 }
