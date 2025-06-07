@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,13 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import type { DialogProps } from "@/interfaces/DialogProps";
 
-interface SettingsDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function SettingsDialog({ isOpen, onOpenChange }: SettingsDialogProps) {
+export function SettingsDialog({ isOpen, onOpenChange }: DialogProps) {
   const { theme, setTheme } = useTheme();
 
   const [autoSave, setAutoSave] = useState(true);

@@ -17,10 +17,13 @@ func NewServer() *fiber.App {
         IdleTimeout:  30 * time.Second,
     })
 
+    
+
     db := config.ConnectDB() // or however you're initializing GORM
 
-    // Inject DB into context
     app.Use(middleware.InjectDB(db))
+    app.Use(middleware.CORSMiddleware())
+    
     // Middleware
     app.Use(recover.New())
     app.Use(logger.New(logger.Config{

@@ -239,7 +239,7 @@
 .prose code {
   /* background-color: var(--color-primary-foreground); */
   background-color: var(--color-code-background);
-  padding: 0.2em 0.4em;
+  padding: 0 0.4em;
   border-radius: 0.25rem;
   font-size: 0.875em;
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -247,17 +247,13 @@
 
 /* Code blocks */
 .prose pre {
-  background-color: var(--color-muted);
   color: var(--color-foreground);
+  background-color: var(--color-muted);
   padding: 1em;
   overflow-x: auto;
   border-radius: 0.375rem;
   font-size: 0.875em;
   line-height: 1.6;
-}
-
-.prose pre code {
-  all: unset;
 }
 
 /* Images */
@@ -336,6 +332,7 @@
 }
 
 /* Placeholder */
+/* Base placeholder styling */
 .tiptap.ProseMirror .is-empty::before {
   content: attr(data-placeholder);
   color: var(--color-muted-foreground);
@@ -343,6 +340,47 @@
   pointer-events: none;
   display: block;
   height: 0;
+  padding-left: 0; /* default zero */
+}
+
+.tiptap.ProseMirror blockquote.is-empty::before {
+  content: attr(data-placeholder);
+  font-style: italic;
+  pointer-events: none;
+  display: block;
+  padding-top: 0.25em; /* optional, to vertically align nicely */
+  height: 0;
+}
+
+.prose blockquote p {
+  margin-top: 0;
+}
+
+.tiptap.ProseMirror pre.is-empty {
+  position: relative; /* make pre a positioning context */
+  padding: 1em; /* keep your existing padding */
+}
+
+.tiptap.ProseMirror pre.is-empty::before {
+  content: attr(data-placeholder);
+  font-style: italic;
+  color: var(--color-muted-foreground);
+  pointer-events: none;
+  position: absolute;
+  top: 2.25em; /* same as pre's padding-top */
+  left: 2.25em; /* same as pre's padding-left */
+  right: 1em; /* optional, to wrap nicely */
+  white-space: nowrap; /* optional to keep placeholder in one line */
+  user-select: none; /* prevent selection of placeholder */
+}
+
+.prose a {
+  color: var(--purple);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--purple-contrast);
+  }
 }
 
 .app-background {

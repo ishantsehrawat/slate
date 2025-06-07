@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { Calendar, Search, Square, SquarePen } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -12,73 +12,39 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { fetchJournalsGrouped } from "@/API/api";
+import type { IJournalGroup } from "@/interfaces/Journal";
 
-// Menu items.
+// Static menu items
 const items = [
-  {
-    title: "New Slate",
-    url: "#",
-    icon: SquarePen,
-  },
-  {
-    title: "Search Slates",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
+  { title: "New Slate", url: "#", icon: SquarePen },
+  { title: "Search Slates", url: "#", icon: Search },
+  { title: "Calendar", url: "#", icon: Calendar },
 ];
 
-const slates = [
-  {
-    label: "Today",
-    slates: [
-      "Morning Reflections",
-      "Work Notes",
-      "Evening Gratitude",
-      "Daily Goals",
-    ],
-  },
-  {
-    label: "Previous 7 Days",
-    slates: [
-      "Weekly Goals Review",
-      "Project Updates",
-      "Personal Highlights",
-      "Team Feedback",
-      "Weekly Retrospective",
-    ],
-  },
-  {
-    label: "Last Month",
-    slates: [
-      "Monthly Summary",
-      "Lessons Learned",
-      "Upcoming Plans",
-      "Budget Review",
-    ],
-  },
-  {
-    label: "March",
-    slates: [
-      "Spring Planning",
-      "March Achievements",
-      "Ideas for Growth",
-      "Event Preparations",
-      "March Retrospective",
-      "New Initiatives",
-    ],
-  },
-  {
-    label: "February",
-    slates: ["Winter Wrap-Up", "February Highlights", "Goals for March"],
-  },
-];
+// Define TypeScript interface matching your grouped response
+interface JournalEntry {
+  id: number;
+  title: string;
+  createdAt: string;
+}
+
+interface JournalGroup {
+  label: string;
+  journals: JournalEntry[];
+}
 
 export function AppSidebar() {
+  const [groupedJournals, setGroupedJournals] = useState<JournalGroup[]>([]);
+
+  useEffect(() => {
+    fetchJournalsGrouped()
+      .then((data: IJournalGroup[]) => {
+        setGroupedJournals(data);
+      })
+      .catch((err) => console.error("Error fetching journals:", err));
+  }, []);
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -87,6 +53,7 @@ export function AppSidebar() {
           <SidebarTrigger />
         </div>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -104,11 +71,15 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {slates.map((slateGroup) => (
-          <SidebarGroup>
-            <SidebarGroupLabel>{slateGroup.label}</SidebarGroupLabel>
-            {slateGroup.slates.map((slate) => (
-              <SidebarMenuButton>{slate}</SidebarMenuButton>
+
+        {/* Render journal groups from backend */}
+        {groupedJournals.map(({ label, journals }) => (
+          <SidebarGroup key={label}>
+            <SidebarGroupLabel>{label}</SidebarGroupLabel>
+            {journals.map((entry) => (
+              <SidebarMenuButton key={entry.id}>
+                {entry.title}
+              </SidebarMenuButton>
             ))}
           </SidebarGroup>
         ))}

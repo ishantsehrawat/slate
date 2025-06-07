@@ -1,31 +1,21 @@
 package middleware
 
 import (
-	"strings"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-
 	"github.com/ishant/slate-backend/config"
 )
 
 func RequireAuth(c *fiber.Ctx) error {
-	authHeader := c.Get("Authorization")
-	if authHeader == "" {
+	// ✅ Get token from cookie instead of header
+	tokenStr := c.Cookies("auth_token")
+	if tokenStr == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Missing Authorization header",
+			"error": "Missing auth token",
 		})
 	}
 
-	// Expecting: Bearer <token>
-	tokenParts := strings.Split(authHeader, " ")
-	if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid Authorization header format",
-		})
-	}
-
-	token, err := jwt.Parse(tokenParts[1], func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 		// Validate the alg is what we expect
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fiber.NewError(fiber.StatusUnauthorized, "Unexpected signing method")
@@ -39,7 +29,7 @@ func RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	// Optional: store claims in context for later use
+	// ✅ Store useful claims in context
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		c.Locals("user_id", claims["user_id"])
 		c.Locals("email", claims["email"])

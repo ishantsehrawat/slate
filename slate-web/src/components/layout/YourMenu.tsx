@@ -7,16 +7,15 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Bolt, LogOut, SquarePlus } from "lucide-react";
+import { Bolt, LogIn, LogOut, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { SettingsDialog } from "../dialogs/SettingsDialog";
+import KeyboardShortcutDialog from "../dialogs/KeyboardShortcutDialog";
+import { googleLogin } from "@/API/api";
 
 export function YourMenu() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const toggleSettings = () => {
-    setIsSettingsOpen((prev) => !prev);
-  };
+  const [isShortcutOpen, setShortcutOpen] = useState(false);
 
   return (
     <>
@@ -31,15 +30,19 @@ export function YourMenu() {
           <MenubarContent>
             <MenubarItem disabled>ishantsehrawat75@gmail.com</MenubarItem>
             <MenubarSeparator />
-            <MenubarItem onClick={toggleSettings}>
+            <MenubarItem onClick={() => setIsSettingsOpen((prev) => !prev)}>
               <Bolt className="h-4 w-4" />
               Settings
             </MenubarItem>
-            <MenubarItem>
+            <MenubarItem onClick={() => setShortcutOpen((prev) => !prev)}>
               <SquarePlus className="h-4 w-4" />
               Keyboard Shortcuts
             </MenubarItem>
             <MenubarSeparator />
+            <MenubarItem onClick={() => googleLogin()}>
+              <LogIn className="h-4 w-4" />
+              Login
+            </MenubarItem>
             <MenubarItem>
               <LogOut className="h-4 w-4" />
               Logout
@@ -50,6 +53,11 @@ export function YourMenu() {
       <SettingsDialog
         isOpen={isSettingsOpen}
         onOpenChange={setIsSettingsOpen}
+      />
+
+      <KeyboardShortcutDialog
+        isOpen={isShortcutOpen}
+        onOpenChange={setShortcutOpen}
       />
     </>
   );

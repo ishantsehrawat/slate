@@ -22,11 +22,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useSidebar } from "../ui/sidebar";
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [closeMenuBar, setCloseMenuBar] = useState(false);
+  const { state } = useSidebar();
+
   return (
-    <div className="flex w-[794px] items-center justify-center fixed bottom-10 left-[60%] transform -translate-x-1/2 gap-4">
+    <div
+      className={`flex w-[794px] items-center justify-center fixed bottom-10 ${
+        state === "expanded" ? "left-[60%]" : "left-1/2"
+      } transform -translate-x-1/2 gap-4`}
+    >
       {!closeMenuBar && (
         <>
           <ToggleGroup
@@ -103,11 +110,11 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           <Select
             onValueChange={(value) => {
               if (value === "h2")
-                editor?.chain().focus().setHeading({ level: 4 }).run();
+                editor?.chain().focus().setHeading({ level: 2 }).run();
               if (value === "h3")
-                editor?.chain().focus().setHeading({ level: 5 }).run();
+                editor?.chain().focus().setHeading({ level: 3 }).run();
               if (value === "h4")
-                editor?.chain().focus().setHeading({ level: 6 }).run();
+                editor?.chain().focus().setHeading({ level: 4 }).run();
               if (value === "p") editor?.chain().focus().setParagraph().run();
             }}
           >

@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  slate-backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: slate-api
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    volumes:
+      - ./slate-backend:/app
+      # If you have a data directory for persistent storage
+      - slate-data:/app/data
+    networks:
+      slate-network:
+        aliases:
+          - api.slate.com
+    restart: unless-stopped
+
+networks:
+  slate-network:
+    driver: bridge
+
+volumes:
+  slate-data:
