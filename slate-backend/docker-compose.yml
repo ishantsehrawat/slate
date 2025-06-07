@@ -3,16 +3,17 @@ version: "3.8"
 services:
   slate-backend:
     build:
+      context: .
       dockerfile: Dockerfile
     container_name: slate-api
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
+      - DB_PATH=/data/slate.db
     volumes:
-      - ./slate-backend:/app
-      # If you have a data directory for persistent storage
-      - slate-data:/app/data
+      # Remove the app volume mount as it conflicts with the container
+      - slate-data:/data
     networks:
       slate-network:
         aliases:
@@ -25,3 +26,4 @@ networks:
 
 volumes:
   slate-data:
+    driver: local
