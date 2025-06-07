@@ -8,11 +8,10 @@ import (
 // CORSMiddleware returns a Fiber middleware handler for CORS
 func CORSMiddleware() fiber.Handler {
 	return cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173",
+		AllowOrigins:     "http://test.slate.com:5173",
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, Cookie",
 		AllowCredentials: true,
 		ExposeHeaders:    "Content-Length, Content-Type", // optional
 	})
 }
-

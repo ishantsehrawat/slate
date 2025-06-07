@@ -73,7 +73,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Render journal groups from backend */}
-        {groupedJournals.map(({ label, journals }) => (
+        {groupedJournals?.map(({ label, journals }) => (
           <SidebarGroup key={label}>
             <SidebarGroupLabel>{label}</SidebarGroupLabel>
             {journals.map((entry) => (

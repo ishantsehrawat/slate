@@ -1,6 +1,6 @@
 import type { IJournalGroup } from "@/interfaces/Journal";
 
-const BASE_URL = "http://127.0.0.1:8080";
+const BASE_URL = "http://api.slate.com:80";
 
 export function googleLogin(): void {
   window.location.href = `${BASE_URL}/auth/google/login`;

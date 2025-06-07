@@ -52,12 +52,12 @@ func GoogleCallback(c *fiber.Ctx) error {
 		Name:     "auth_token",
 		Value:    token,
 		HTTPOnly: true,
-		Secure:   false,               // ⚠️ Use true in production with HTTPS!
+		Secure:   false, // ⚠️ Use true in production with HTTPS!
 		Path:     "/",
-		SameSite: "Lax",               // Consider Strict or None if cross-site and secure is true
-		MaxAge:   60 * 60 * 24 * 7,   // 7 days expiry
+		SameSite: "Lax",            // Consider Strict or None if cross-site and secure is true
+		MaxAge:   60 * 60 * 24 * 7, // 7 days expiry
 	})
 
 	// Redirect to frontend after successful login
-	return c.Redirect("http://localhost:5173/auth/callback", fiber.StatusTemporaryRedirect)
+	return c.Redirect("http://test.slate.com:5173/auth/callback", fiber.StatusTemporaryRedirect)
 }
