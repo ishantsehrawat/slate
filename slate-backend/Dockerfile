@@ -3,9 +3,15 @@ FROM golang:1.21-alpine
 WORKDIR /app
 
 ENV GOTOOLCHAIN=auto
+ENV CGO_ENABLED=1
 
 # Add necessary build tools
-RUN apk add --no-cache git
+RUN apk add --no-cache \
+    git \
+    gcc \
+    musl-dev \
+    sqlite \
+    sqlite-dev 
 
 # Copy go mod files
 COPY go.mod go.sum ./

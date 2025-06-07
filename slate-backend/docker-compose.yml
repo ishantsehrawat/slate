@@ -10,6 +10,7 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
+      - DB_PATH=/data/slate.db
     volumes:
       # Remove the app volume mount as it conflicts with the container
       - slate-data:/data
@@ -25,3 +26,4 @@ networks:
 
 volumes:
   slate-data:
+    driver: local
