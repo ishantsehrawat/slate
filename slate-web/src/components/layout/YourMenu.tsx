@@ -39,7 +39,7 @@ export function YourMenu() {
               Keyboard Shortcuts
             </MenubarItem>
             <MenubarSeparator />
-            <MenubarItem onClick={() => googleLogin()}>
+            <MenubarItem onClick={googleLogin}>
               <LogIn className="h-4 w-4" />
               Login
             </MenubarItem>

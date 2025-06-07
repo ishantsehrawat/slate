@@ -11,7 +11,16 @@ RUN apk add --no-cache \
     gcc \
     musl-dev \
     sqlite \
-    sqlite-dev 
+    sqlite-dev \
+    curl
+
+# Install Air with explicit path and make it executable
+RUN curl -sSf https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh && \
+    mv ./bin/air /usr/local/bin/ && \
+    chmod +x /usr/local/bin/air
+
+# Copy air config first
+COPY air.toml ./
 
 # Copy go mod files
 COPY go.mod go.sum ./
@@ -22,13 +31,10 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
-# Build with explicit output path and verify
-RUN go build -o main ./cmd/server && \
-    ls -la main && \
-    chmod +x main
+# Create tmp directory for Air
+RUN mkdir -p tmp
 
-# Expose port
 EXPOSE 8080
 
-# Use relative path for CMD
-CMD ["./main"]
+# Use absolute path to Air
+CMD ["/usr/local/bin/air", "-c", "air.toml"]
