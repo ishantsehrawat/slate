@@ -14,28 +14,18 @@ import {
 } from "@/components/ui/sidebar";
 import { fetchJournalsGrouped } from "@/API/api";
 import type { IJournalGroup } from "@/interfaces/Journal";
+import { useNavigate } from "react-router-dom";
 
 // Static menu items
 const items = [
-  { title: "New Slate", url: "#", icon: SquarePen },
+  { title: "New Slate", url: "/0", icon: SquarePen },
   { title: "Search Slates", url: "#", icon: Search },
   { title: "Calendar", url: "#", icon: Calendar },
 ];
 
-// Define TypeScript interface matching your grouped response
-interface JournalEntry {
-  id: number;
-  title: string;
-  createdAt: string;
-}
-
-interface JournalGroup {
-  label: string;
-  journals: JournalEntry[];
-}
-
 export function AppSidebar() {
-  const [groupedJournals, setGroupedJournals] = useState<JournalGroup[]>([]);
+  const navigate = useNavigate();
+  const [groupedJournals, setGroupedJournals] = useState<IJournalGroup[]>([]);
 
   useEffect(() => {
     fetchJournalsGrouped()
@@ -44,6 +34,10 @@ export function AppSidebar() {
       })
       .catch((err) => console.error("Error fetching journals:", err));
   }, []);
+
+  const openJournal = (id: string) => {
+    navigate(`/${id}`, { replace: true });
+  };
 
   return (
     <Sidebar>
@@ -76,8 +70,11 @@ export function AppSidebar() {
         {groupedJournals?.map(({ label, journals }) => (
           <SidebarGroup key={label}>
             <SidebarGroupLabel>{label}</SidebarGroupLabel>
-            {journals.map((entry) => (
-              <SidebarMenuButton key={entry.id}>
+            {journals?.map((entry) => (
+              <SidebarMenuButton
+                key={entry.id}
+                onClick={() => openJournal(entry?.hash)}
+              >
                 {entry.title}
               </SidebarMenuButton>
             ))}

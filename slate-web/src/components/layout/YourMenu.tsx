@@ -7,15 +7,43 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Bolt, LogIn, LogOut, SquarePlus } from "lucide-react";
+import { Bolt, LogOut, SquarePlus } from "lucide-react";
 import { useState } from "react";
 import { SettingsDialog } from "../dialogs/SettingsDialog";
 import KeyboardShortcutDialog from "../dialogs/KeyboardShortcutDialog";
-import { googleLogin } from "@/API/api";
+import { createJournal, logout } from "@/API/api";
+import type { IJournal } from "@/interfaces/Journal";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function YourMenu() {
+  const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShortcutOpen, setShortcutOpen] = useState(false);
+
+  const writeJournal = () => {
+    const journal: IJournal = {
+      title: "siduoghiskdjbpowuildvks",
+      content: "piuvoihxjc ]asdib x0fibpjosdoubh ioudhbp9duifbhdjp 9oudihj",
+    };
+
+    createJournal(journal).then(
+      (data) => {
+        console.log(data);
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  };
+
+  const handleLogout = async () => {
+    const { message } = await logout();
+    console.log(message);
+    toast.success(message);
+
+    navigate("/", { replace: true });
+  };
 
   return (
     <>
@@ -38,12 +66,12 @@ export function YourMenu() {
               <SquarePlus className="h-4 w-4" />
               Keyboard Shortcuts
             </MenubarItem>
-            <MenubarSeparator />
-            <MenubarItem onClick={googleLogin}>
-              <LogIn className="h-4 w-4" />
-              Login
+            <MenubarItem onClick={writeJournal}>
+              <SquarePlus className="h-4 w-4" />
+              Create journal
             </MenubarItem>
-            <MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem onClick={handleLogout}>
               <LogOut className="h-4 w-4" />
               Logout
             </MenubarItem>

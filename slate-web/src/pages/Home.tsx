@@ -9,9 +9,12 @@ import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Info } from "lucide-react";
 import { useKeyCombo } from "@/hooks/useKeyCombo";
+import useDebounce from "@/hooks/useDebounce";
+import { createJournal, getJournal, updateJournal } from "@/API/api";
+import { useNavigate, useParams } from "react-router-dom";
 
 const lowlight = createLowlight(all);
 
@@ -102,9 +105,15 @@ const extensions = [
   }),
 ];
 const Home = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const [editorState, setEditorState] = useState("");
   const [heading, setHeading] = useState("");
+  const [journalId, setJournalId] = useState<string | null>(id ?? null);
 
+  const debouncedEditorState = useDebounce(editorState, 3000); // debounce the value
+
+  const editorRef = useRef<Editor | null>(null);
   const generateHeadingShortcut = useKeyCombo(["mod", "g"]);
 
   const setSlateHeading = (value: string) => {
@@ -112,18 +121,63 @@ const Home = () => {
     document.title = value && "Slate";
   };
 
-  const editor: Editor | null = useEditor({
+  useEffect(() => {
+    setJournalId(id ?? null);
+  }, [id]);
+
+  const editor = useEditor({
     autofocus: true,
     extensions,
-    content: editorState,
+    content: "",
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());
     },
+    editorProps: {
+      attributes: {
+        class: "focus:outline-none",
+      },
+    },
+    onCreate: ({ editor }) => {
+      editorRef.current = editor;
+    },
   });
+
+  useEffect(() => {
+    if (!debouncedEditorState) return;
+
+    if (!journalId || journalId === "0") {
+      // Create new journal
+      createJournal({ title: heading, content: debouncedEditorState }).then(
+        (data) => {
+          console.log("Created journal:", data);
+          setJournalId(data?.Hash);
+          navigate(`/${data?.Hash}`, { replace: true }); // Update the URL without pushing new history
+        }
+      );
+    } else {
+      // Update existing journal
+      updateJournal(journalId, {
+        title: heading,
+        content: debouncedEditorState,
+      }).then((data) => {
+        console.log("Updated journal:", data);
+      });
+    }
+  }, [debouncedEditorState]);
+
+  useEffect(() => {
+    if (editor && journalId !== "0") {
+      getJournal(journalId).then((data) => {
+        setHeading(data.Title);
+        setEditorState(data.Content);
+        editor.commands.setContent(data.Content);
+      });
+    }
+  }, [editor, journalId]);
 
   return (
     <div className="flex justify-center pb-32 pt-16">
-      <div className="w-[794px] prose">
+      <div className="w-[800px] prose">
         <div className="flex flex-col gap-6">
           <input
             type="text"

@@ -1,9 +1,20 @@
-import type { IJournalGroup } from "@/interfaces/Journal";
+import type { IJournalGroup, LogoutResponse } from "@/interfaces/Journal";
 
 const BASE_URL = "http://api.slate.com:80";
 
 export function googleLogin(): void {
   window.location.href = `${BASE_URL}/auth/google/login`;
+}
+
+export async function logout(): Promise<LogoutResponse> {
+  const res = await fetch(`${BASE_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!res.ok) throw new Error("Failed to logout");
+
+  return res.json();
 }
 
 // ✅ GET grouped journals (requires auth cookie)
@@ -17,7 +28,7 @@ export async function fetchJournalsGrouped(): Promise<IJournalGroup[]> {
 }
 
 // ✅ GET single journal (requires auth cookie)
-export const getJournal = async (id: string) => {
+export const getJournal = async (id: string | null) => {
   const res = await fetch(`${BASE_URL}/api/journals/${id}`, {
     credentials: "include",
   });
@@ -44,7 +55,7 @@ export const createJournal = async (data: {
 
 // ✅ PUT update journal (requires auth cookie)
 export const updateJournal = async (
-  id: string,
+  id: string | undefined,
   data: { title?: string; content?: string }
 ) => {
   const res = await fetch(`${BASE_URL}/api/journals/${id}`, {
