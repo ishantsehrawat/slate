@@ -59,5 +59,23 @@ func GoogleCallback(c *fiber.Ctx) error {
 	})
 
 	// Redirect to frontend after successful login
-	return c.Redirect("http://test.slate.com:5173/auth/callback", fiber.StatusTemporaryRedirect)
+	return c.Redirect("http://test.slate.com:5173/0", fiber.StatusTemporaryRedirect)
 }
+
+func Logout(c *fiber.Ctx) error {
+	// Clear the auth_token cookie by setting MaxAge = -1
+	c.Cookie(&fiber.Cookie{
+		Name:     "auth_token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HTTPOnly: true,
+		Secure:   false, // ⚠️ Set to true in production with HTTPS
+		SameSite: "Lax",
+	})
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "Logged out successfully",
+	})
+}
+

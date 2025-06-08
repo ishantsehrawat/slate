@@ -17,10 +17,11 @@ func SetupRoutes(app *fiber.App) {
 
 	auth.Get("/google/login", handlers.GoogleLogin)
 	auth.Get("/google/callback", handlers.GoogleCallback)
+    auth.Post("/logout", handlers.Logout)
 
     journals.Get("/", handlers.GetMyJournals)
-    journals.Get("/:id", handlers.GetJournal)
+    journals.Get("/:hash", handlers.GetJournal)
     journals.Post("/", handlers.CreateJournal)
-    journals.Put("/:id", handlers.UpdateJournal)
-    journals.Delete("/:id", handlers.DeleteJournal)
+    journals.Put("/:hash", handlers.UpdateJournal)
+    journals.Delete("/:hash", handlers.DeleteJournal)
 }
